@@ -99,7 +99,6 @@ if (!empty($_POST['sync'])) {
 
 <body class="body_top">
 <?php
-// Display success or failure messages based on individual operations
 if ($upload_success) {
     echo "<p style='color:green'>" . xlt('File Uploaded and Saved Successfully') . "</p>\n";
 } elseif ($import_success) {
