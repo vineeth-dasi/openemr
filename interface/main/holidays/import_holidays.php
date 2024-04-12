@@ -63,8 +63,8 @@ if (!empty($_POST['bn_upload'])) {
     }
 
     //Upload and save the csv
-    $saved = $holidays_controller->upload_csv($_FILES);
-    if ($saved) {
+    $upload_success  = $holidays_controller->upload_csv($_FILES);
+    if ($upload_success) {
         $csv_file_data = $holidays_controller->get_file_csv_data();
     }
 }
@@ -75,7 +75,7 @@ if (!empty($_POST['import_holidays'])) {
     }
 
     //Import from the csv file to the calendar external table
-    $saved = $holidays_controller->import_holidays_from_csv();
+    $import_success  = $holidays_controller->import_holidays_from_csv();
 }
 
 if (!empty($_POST['sync'])) {
@@ -84,7 +84,7 @@ if (!empty($_POST['sync'])) {
     }
 
     //Upload and save the csv
-    $saved = $holidays_controller->create_holiday_event();
+    $sync_success  = $holidays_controller->create_holiday_event();
 }
 
 
@@ -99,18 +99,18 @@ if (!empty($_POST['sync'])) {
 
 <body class="body_top">
 <?php
-if (!empty($saved)) {
-    echo "<p style='color:green'>" .
-        xlt('Successfully Completed');
-        "</p>\n";
+// Display success or failure messages based on individual operations
+if ($upload_success) {
+    echo "<p style='color:green'>" . xlt('File Uploaded and Saved Successfully') . "</p>\n";
+} elseif ($import_success) {
+    echo "<p style='color:green'>" . xlt('Holiday Events Imported Successfully') . "</p>\n";
+} elseif ($sync_success) {
+    echo "<p style='color:green'>" . xlt('Synchronization Completed Successfully') . "</p>\n";
 } elseif (
-    !empty($_POST['bn_upload'])             &&
-        !empty($_POST['import_holidays'])       &&
-        !empty($_POST['sync'])
+    (!$upload_success || !$import_success || !$sync_success) &&
+    (isset($_POST['bn_upload']) || isset($_POST['import_holidays']) || isset($_POST['sync']))
 ) {
-    echo "<p style='color:red'>" .
-        xlt('Operation Failed');
-    "</p>\n";
+    echo "<p style='color:red'>" . xlt('Operation Failed') . "</p>\n";
 }
 ?>
 <div class="container-fluid">
@@ -132,7 +132,7 @@ if (!empty($saved)) {
                     <input type="hidden" name="MAX_FILE_SIZE" value="350000000" />
                 </td>
                 <td class='detail' nowrap>
-                    <input type="file" name="form_file" size="40" />
+                    <input type="file" name="form_file" size="40" accept=".csv"/>
                 </td>
             </tr>
             <tr>
